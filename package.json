@@ -1,0 +1,26 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    "migrate": "mysql source ./db/schema.sql",
+    "seed": "mysql source ./db/seeds.sql"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d-belleza/employee-tracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/d-belleza/employee-tracker/issues"
+  },
+  "homepage": "https://github.com/d-belleza/employee-tracker#readme",
+  "dependencies": {
+    "inquirer": "^7.3.3",
+    "mysql2": "^2.1.0"
+  }
+}
