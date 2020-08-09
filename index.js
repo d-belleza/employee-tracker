@@ -1,6 +1,7 @@
 // require dependencies and modules
 const inquirer = require('inquirer');
 const logo = require('asciiart-logo');
+const database = require('./db/database')
 require('console.table');
 
 // display title
@@ -29,16 +30,28 @@ function promptUser() {
     ]).then(userChoice => {
         switch(userChoice.choice){
             case 'View all departments':
-                console.log('Viewing all departments');
-                promptUser();
+                database.getDepts()
+                    .then(([rows]) => {
+                        var depts = rows;
+                        console.table(depts);
+                        promptUser();
+                    })
                 break;
             case 'View all roles':
-                console.log('Viewing all roles');
-                promptUser();
+                database.getRoles()
+                    .then(([rows]) => {
+                        var roles = rows;
+                        console.table(roles);
+                        promptUser();
+                    })
                 break;
             case 'View all employees':
-                console.log('Viewing all employees');
-                promptUser();
+                database.getEmps()
+                    .then(([rows]) => {
+                        var employees = rows;
+                        console.table(employees);
+                        promptUser();
+                    })
                 break;
             case 'Add department':
                 addDept();
@@ -54,6 +67,7 @@ function promptUser() {
                 break;
             case 'Quit':
                 console.log('\nGoodbye!\n');
+                database.quit();
                 break;
         }
     })
@@ -62,6 +76,7 @@ function promptUser() {
 function addDept(){
     inquirer.prompt([
         {
+            type: 'input',
             name: 'name',
             message: 'What is the name of the department?',
             validate: nameInput => {
@@ -82,7 +97,8 @@ function addDept(){
 function addRole(){
     inquirer.prompt([
         {
-            name: 'name',
+            type: 'input',
+            name: 'role',
             message: 'What is the name of the role?',
             validate: nameInput => {
                 if (nameInput) {
@@ -92,6 +108,29 @@ function addRole(){
                 return false;
                 }
             }
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'What is the role salary?',
+            validate: nameInput => {
+                if (nameInput) {
+                return true;
+                } else {
+                console.log('Please enter a salary!');
+                return false;
+                }
+            }
+        },
+        {
+            type: "list",
+            name: "deptChoice",
+            message: "Select role's department.",
+            choices: [
+                'Department 1',
+                'Department 2',
+                'Department 3'
+            ]
         }
     ]).then(role => {
         console.log(`Added ${role.name} to database`);
@@ -102,6 +141,7 @@ function addRole(){
 function addEmp(){
     inquirer.prompt([
         {
+            type: 'input',
             name: 'first_name',
             message: "What is the employee's first name?",
             validate: nameInput => {
@@ -114,6 +154,7 @@ function addEmp(){
             }
         },
         {
+            type: 'input',
             name: 'last_name',
             message: "What is the employee's last name?",
             validate: nameInput => {
