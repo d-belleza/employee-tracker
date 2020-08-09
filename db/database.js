@@ -5,7 +5,7 @@ const connection = mysql.createConnection({
     // MySQL username
     user: "root",
     // MySQL password
-    password: "david@1222",
+    password: "",
     database: "employee_db"
 });
 
@@ -21,25 +21,43 @@ class Database {
     }
 
     // class methods
-    getDepts() {
+    getDepts(){
         return connection.promise().query(
             'SELECT id, dept_name FROM departments;'
         );
     }
 
-    getRoles() {
+    getRoles(){
         return connection.promise().query(
             'SELECT roles.id, roles.title, departments.dept_name AS departments, roles.salary FROM roles LEFT JOIN departments on roles.department_id = departments.id;'  
         );
     }
 
-    getEmps() {
+    getEmps(){
         return connection.promise().query(
             "SELECT employees.id, employees.first_name, employees.last_name, roles.title, departments.dept_name AS departments, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employees LEFT JOIN roles on employees.role_id = roles.id LEFT JOIN departments on roles.department_id = departments.id LEFT JOIN employees manager on manager.id = employees.manager_id;"
         );
     }
 
-    quit() {
+    createDept(department){
+        return this.connection.promise().query(
+            'INSERT INTO departments SET ?', {dept_name: department}
+        )
+    }
+
+    createRole(role){
+        return this.connection.promise().query(
+            'INSERT INTO roles SET ?', role
+        )
+    }
+
+    createEmp(employee){
+        return this.connection.promise().query(
+            'INSERT INTO employees SET ?', employee
+        )
+    }
+
+    quit(){
         connection.end();
     }
 }

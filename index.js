@@ -77,7 +77,7 @@ function addDept(){
     inquirer.prompt([
         {
             type: 'input',
-            name: 'name',
+            name: 'department',
             message: 'What is the name of the department?',
             validate: nameInput => {
                 if (nameInput) {
@@ -88,54 +88,63 @@ function addDept(){
                 }
             }
         }
-    ]).then(dept => {
-        console.log(`Added ${dept.name} to database`);
+    ]).then(({department}) => {
+        database.createDept(department);
+        console.log(`\nAdded ${department.name} to database\n`);
         promptUser();
-    })
+    }).catch(console.log);
 }
 
 function addRole(){
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'role',
-            message: 'What is the name of the role?',
-            validate: nameInput => {
-                if (nameInput) {
-                return true;
-                } else {
-                console.log('Please enter a role!');
-                return false;
+    database.getDepts()
+        .then(([rows]) => {
+            var departments = rows;
+            const departmentChoices = departments.map(({id, name}) => ({
+                name: name,
+                value: id
+            }));
+
+            inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'title',
+                    message: 'What is the name of the role?',
+                    validate: nameInput => {
+                        if (nameInput) {
+                        return true;
+                        } else {
+                        console.log('Please enter role!');
+                        return false;
+                        }
+                    }
+                },
+                {
+                    type: 'input',
+                    name: 'salary',
+                    message: 'What is the salary rate?',
+                    validate: salaryInput => {
+                        if (salaryInput) {
+                        return true;
+                        } else {
+                        console.log('Please enter a salary!');
+                        return false;
+                        }
+                    }
+                },
+                {
+                    type: 'list',
+                    name: 'department_id',
+                    message: 'Which department is the role under?',
+                    choices: departmentChoices
                 }
-            }
-        },
-        {
-            type: 'input',
-            name: 'salary',
-            message: 'What is the role salary?',
-            validate: nameInput => {
-                if (nameInput) {
-                return true;
-                } else {
-                console.log('Please enter a salary!');
-                return false;
-                }
-            }
-        },
-        {
-            type: "list",
-            name: "deptChoice",
-            message: "Select role's department.",
-            choices: [
-                'Department 1',
-                'Department 2',
-                'Department 3'
-            ]
-        }
-    ]).then(role => {
-        console.log(`Added ${role.name} to database`);
-        promptUser();
-    })
+            ])
+                .then(role => {
+                    database.createRole(role)
+                        .then(() => console.log(`\nAdded ${role.title} to database\n`))
+                        .then(() => promptUser())
+                })
+        })
+    
 }
 
 function addEmp(){
@@ -165,33 +174,61 @@ function addEmp(){
                 return false;
                 }
             }
-        },
-        {
-            type: "list",
-            name: "roleChoice",
-            message: "Select employee role.",
-            choices: [
-                'Role 1',
-                'Role 2',
-                'Role 3'
-            ]
-        },
-        {
-            type: "list",
-            name: "managerChoice",
-            message: "Select employee manager.",
-            choices: [
-                'Name 1',
-                'Name 2',
-                'Name 3'
-            ]
-        },
+        }
     ]).then(res => {
         var firstName = res.first_name;
         var lastName = res.last_name;
         
-        console.log(`Added ${firstName} ${lastName} to database`);
-        promptUser();
+        database.getRoles()
+            .then(([rows]) => {
+                var roles = rows;
+                const roleChoices = roles.map(({id, title}) => ({
+                    name: title,
+                    value: id
+                }))
+                
+                inquirer.prompt(
+                    {
+                        type: "list",
+                        name: "roleId",
+                        message: "Select employee role.",
+                        choices: roleChoices
+                    }
+                ).then(res => {
+                    var roleId = res.roleId;
+
+                    database.getEmps()
+                        .then(([rows]) => {
+                            var employees = rows;
+                            const managerChoices = employees.map(({id, first_name, last_name}) => ({
+                                name: `${first_name} ${last_name}`,
+                                value: id
+                            }))
+                            // default with no manager assigned
+                            managerChoices.unshift({name: "None", value: null});
+
+                            inquirer.prompt(
+                                {
+                                    type: 'list',
+                                    name: 'managerId',
+                                    message: 'Select employee manager.',
+                                    choices: managerChoices
+                                }
+                            ).then(res => {
+                                var employee = {
+                                    manager_id: res.managerId,
+                                    role_id: roleId,
+                                    first_name: firstName,
+                                    last_name: lastName
+                                }
+
+                                database.createEmp(employee)
+                                    .then(() => console.log(`\nAdded ${firstName} ${lastName} to database\n`))
+                                    .then(() => promptUser())
+                            })
+                        })
+                })
+            })
     })
 }
 
