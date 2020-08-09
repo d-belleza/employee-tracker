@@ -10,7 +10,7 @@ console.log(
 promptUser();
 
 function promptUser() {
-    return inquirer.prompt([
+    inquirer.prompt([
         {
             type: "list",
             name: "choice",
@@ -41,24 +41,143 @@ function promptUser() {
                 promptUser();
                 break;
             case 'Add department':
-                console.log('Adding department');
-                promptUser();
+                addDept();
                 break;
             case 'Add role':
-                console.log('Adding role');
-                promptUser();
+                addRole();
                 break;
             case 'Add employee':
-                console.log('Adding employee');
-                promptUser();
+                addEmp();
                 break;
             case 'Update employee role':
-                console.log('Updating role');
-                promptUser();
+                updateEmp();
                 break;
             case 'Quit':
-                console.log('Quitting, goodbye!');
+                console.log('\nGoodbye!\n');
                 break;
         }
+    })
+}
+
+function addDept(){
+    inquirer.prompt([
+        {
+            name: 'name',
+            message: 'What is the name of the department?',
+            validate: nameInput => {
+                if (nameInput) {
+                return true;
+                } else {
+                console.log('Please enter a department!');
+                return false;
+                }
+            }
+        }
+    ]).then(dept => {
+        console.log(`Added ${dept.name} to database`);
+        promptUser();
+    })
+}
+
+function addRole(){
+    inquirer.prompt([
+        {
+            name: 'name',
+            message: 'What is the name of the role?',
+            validate: nameInput => {
+                if (nameInput) {
+                return true;
+                } else {
+                console.log('Please enter a role!');
+                return false;
+                }
+            }
+        }
+    ]).then(role => {
+        console.log(`Added ${role.name} to database`);
+        promptUser();
+    })
+}
+
+function addEmp(){
+    inquirer.prompt([
+        {
+            name: 'first_name',
+            message: "What is the employee's first name?",
+            validate: nameInput => {
+                if (nameInput) {
+                return true;
+                } else {
+                console.log('Please enter employee first name!');
+                return false;
+                }
+            }
+        },
+        {
+            name: 'last_name',
+            message: "What is the employee's last name?",
+            validate: nameInput => {
+                if (nameInput) {
+                return true;
+                } else {
+                console.log('Please enter employee last name!');
+                return false;
+                }
+            }
+        },
+        {
+            type: "list",
+            name: "roleChoice",
+            message: "Select employee role.",
+            choices: [
+                'Role 1',
+                'Role 2',
+                'Role 3'
+            ]
+        },
+        {
+            type: "list",
+            name: "managerChoice",
+            message: "Select employee manager.",
+            choices: [
+                'Name 1',
+                'Name 2',
+                'Name 3'
+            ]
+        },
+    ]).then(res => {
+        var firstName = res.first_name;
+        var lastName = res.last_name;
+        
+        console.log(`Added ${firstName} ${lastName} to database`);
+        promptUser();
+    })
+}
+
+function updateEmp() {
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "empChoice",
+            message: "Select employee to update.",
+            choices: [
+                'Name 1',
+                'Name 2',
+                'Name 3'
+            ]
+        },
+        {
+            type: "list",
+            name: "roleChoice",
+            message: "Select employee new role.",
+            choices: [
+                'Role 1',
+                'Role 2',
+                'Role 3'
+            ]
+        }
+    ]).then(res => {
+        console.log('\nEmployee role updated!\n');
+        promptUser();
     })
 }
