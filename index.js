@@ -93,11 +93,12 @@ function addDept(){
         database.createDept(department);
         console.log(`\nAdded ${department.name} to database\n`);
         promptUser();
-    }).catch(console.log);
+    });
 }
 
 // add role
 function addRole(){
+    // get department names to display
     database.getDepts()
         .then(([rows]) => {
             var departments = rows;
@@ -182,6 +183,7 @@ function addEmp(){
         var firstName = res.first_name;
         var lastName = res.last_name;
         
+        // get role titles to display
         database.getRoles()
             .then(([rows]) => {
                 var roles = rows;
@@ -201,6 +203,7 @@ function addEmp(){
                     // store result
                     var roleId = res.roleId;
 
+                    // get manager names to display
                     database.getEmps()
                         .then(([rows]) => {
                             var employees = rows;
@@ -208,7 +211,7 @@ function addEmp(){
                                 name: `${first_name} ${last_name}`,
                                 value: id
                             }))
-                            // default with no manager assigned
+                            // add no manager choice
                             managerChoices.unshift({name: "None", value: null});
 
                             inquirer.prompt(
@@ -238,6 +241,7 @@ function addEmp(){
 
 // update employee role
 function updateEmp() {
+    // get employee names to display
     database.getEmps()
         .then(([rows]) => {
             var employees = rows;
@@ -257,6 +261,7 @@ function updateEmp() {
                 // store result
                 var employeeId = res.employeeId;
 
+                // get role titles to display
                 database.getRoles()
                 .then(([rows]) => {
                     var roles = rows;
