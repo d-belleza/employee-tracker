@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index",
-    "migrate": "mysql source ./db/schema.sql",
-    "seed": "mysql source ./db/seeds.sql"
+    "start": "node index"
   },
   "repository": {
     "type": "git",

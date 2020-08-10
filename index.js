@@ -94,7 +94,7 @@ function addDept(){
         }
     ]).then(({department}) => {
         database.createDept(department);
-        console.log(`\nAdded ${department.name} to database\n`);
+        console.log(`\nAdded department to database\n`);
         promptUser();
     });
 }
