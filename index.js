@@ -33,6 +33,7 @@ function promptUser() {
                 database.getDepts()
                     .then(([rows]) => {
                         var depts = rows;
+                        console.log('\n');
                         console.table(depts);
                         promptUser();
                     })
@@ -41,6 +42,7 @@ function promptUser() {
                 database.getRoles()
                     .then(([rows]) => {
                         var roles = rows;
+                        console.log('\n');
                         console.table(roles);
                         promptUser();
                     })
@@ -49,6 +51,7 @@ function promptUser() {
                 database.getEmps()
                     .then(([rows]) => {
                         var employees = rows;
+                        console.log('\n');
                         console.table(employees);
                         promptUser();
                     })
