@@ -73,6 +73,7 @@ function promptUser() {
     })
 }
 
+// add department
 function addDept(){
     inquirer.prompt([
         {
@@ -95,12 +96,13 @@ function addDept(){
     }).catch(console.log);
 }
 
+// add role
 function addRole(){
     database.getDepts()
         .then(([rows]) => {
             var departments = rows;
-            const departmentChoices = departments.map(({id, name}) => ({
-                name: name,
+            const departmentChoices = departments.map(({id, dept_name}) => ({
+                name: dept_name,
                 value: id
             }));
 
@@ -137,16 +139,16 @@ function addRole(){
                     message: 'Which department is the role under?',
                     choices: departmentChoices
                 }
-            ])
-                .then(role => {
+            ]).then(role => {
                     database.createRole(role)
-                        .then(() => console.log(`\nAdded ${role.title} to database\n`))
-                        .then(() => promptUser())
+                    console.log(`\nAdded ${role.title} to database\n`);
+                    promptUser();
                 })
         })
     
 }
 
+// add employee
 function addEmp(){
     inquirer.prompt([
         {
@@ -176,6 +178,7 @@ function addEmp(){
             }
         }
     ]).then(res => {
+        // store results
         var firstName = res.first_name;
         var lastName = res.last_name;
         
@@ -195,6 +198,7 @@ function addEmp(){
                         choices: roleChoices
                     }
                 ).then(res => {
+                    // store result
                     var roleId = res.roleId;
 
                     database.getEmps()
@@ -223,8 +227,8 @@ function addEmp(){
                                 }
 
                                 database.createEmp(employee)
-                                    .then(() => console.log(`\nAdded ${firstName} ${lastName} to database\n`))
-                                    .then(() => promptUser())
+                                console.log(`\nAdded ${firstName} ${lastName} to database\n`);
+                                promptUser();
                             })
                         })
                 })
@@ -232,30 +236,48 @@ function addEmp(){
     })
 }
 
+// update employee role
 function updateEmp() {
-    inquirer.prompt([
-        {
-            type: "list",
-            name: "empChoice",
-            message: "Select employee to update.",
-            choices: [
-                'Name 1',
-                'Name 2',
-                'Name 3'
-            ]
-        },
-        {
-            type: "list",
-            name: "roleChoice",
-            message: "Select employee new role.",
-            choices: [
-                'Role 1',
-                'Role 2',
-                'Role 3'
-            ]
-        }
-    ]).then(res => {
-        console.log('\nEmployee role updated!\n');
-        promptUser();
-    })
+    database.getEmps()
+        .then(([rows]) => {
+            var employees = rows;
+            const employeeChoices = employees.map(({id, first_name, last_name}) => ({
+                name: `${first_name} ${last_name}`,
+                value: id
+            }))
+
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'employeeId',
+                    message: 'Select employee to update.',
+                    choices: employeeChoices
+                }
+            ]).then(res => {
+                // store result
+                var employeeId = res.employeeId;
+
+                database.getRoles()
+                .then(([rows]) => {
+                    var roles = rows;
+                    const roleChoices = roles.map(({id, title}) => ({
+                      name: title,
+                      value: id
+                    }))
+      
+                    inquirer.prompt([
+                        {
+                            type: "list",
+                            name: "roleId",
+                            message: "Select new role.",
+                            choices: roleChoices
+                        }
+                    ]).then(res => {
+                            database.updateEmployee(res.roleId, employeeId);
+                            console.log('\nUpdated employee role\n');
+                            promptUser();
+                      })
+                  });
+            })
+        })
 }

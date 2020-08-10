@@ -5,7 +5,7 @@ const connection = mysql.createConnection({
     // MySQL username
     user: "root",
     // MySQL password
-    password: "",
+    password: "david@1222",
     database: "employee_db"
 });
 
@@ -54,6 +54,12 @@ class Database {
     createEmp(employee){
         return this.connection.promise().query(
             'INSERT INTO employees SET ?', employee
+        )
+    }
+
+    updateEmployee(roleId, employeeId){
+        return this.connection.promise().query(
+            'UPDATE employees SET role_id = ? WHERE id = ?', [roleId, employeeId]
         )
     }
 
